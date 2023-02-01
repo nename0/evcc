@@ -30,7 +30,7 @@ type VehiclesResponse struct {
 type StatusResponse struct {
 	RetCode string
 	ResCode string
-	// ResMsg is intentionally omitted - structure varies between old/CCS2 models
+	ResMsg  VehicleStatus
 }
 
 type StatusLatestResponse struct {

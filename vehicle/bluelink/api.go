@@ -68,22 +68,9 @@ func (v *API) Vehicles() ([]Vehicle, error) {
 	return res.ResMsg.Vehicles, err
 }
 
-// StatusLatest retrieves vehicle status (triggers refresh for older API, then returns cached data)
-func (v *API) StatusLatest(vehicle Vehicle) (BluelinkVehicleStatusLatest, error) {
+// StatusLatest retrieves the latest server-side status
+func (v *API) StatusLatest(vehicle Vehicle) (StatusLatestResponse, error) {
 	vid := vehicle.VehicleID
-
-	if vehicle.CcuCCS2ProtocolSupport != 0 {
-		var res StatusLatestResponseCCS
-		uri := fmt.Sprintf("%s/%s", v.baseURI, fmt.Sprintf(StatusLatestURLCCS2, vid))
-		err := v.GetJSON(uri, &res)
-		if err == nil && res.RetCode != resOK {
-			err = fmt.Errorf("unexpected response: %s", res.RetCode)
-		}
-		return res, err
-	}
-
-	// For older API: first trigger refresh, then get latest cached data
-	_ = v.Refresh(vehicle) // Ignore error, will retry with /status/latest
 
 	var res StatusLatestResponse
 	uri := fmt.Sprintf("%s/%s", v.baseURI, fmt.Sprintf(StatusLatestURL, vid))
@@ -94,13 +81,15 @@ func (v *API) StatusLatest(vehicle Vehicle) (BluelinkVehicleStatusLatest, error)
 	return res, err
 }
 
-// Refresh triggers a status update from the vehicle
-func (v *API) Refresh(vehicle Vehicle) error {
+// StatusPartial refreshes the status
+func (v *API) StatusPartial(vehicle Vehicle) (StatusResponse, error) {
+	vid := vehicle.VehicleID
+
 	var res StatusResponse
-	uri := fmt.Sprintf("%s/%s", v.baseURI, fmt.Sprintf(StatusURL, vehicle.VehicleID))
+	uri := fmt.Sprintf("%s/%s", v.baseURI, fmt.Sprintf(StatusURL, vid))
 	err := v.GetJSON(uri, &res)
 	if err == nil && res.RetCode != resOK {
 		err = fmt.Errorf("unexpected response: %s", res.RetCode)
 	}
-	return err
+	return res, err
 }
