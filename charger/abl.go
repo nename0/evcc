@@ -227,7 +227,7 @@ func (wb *ABLeMH) MaxCurrentMillis(current float64) error {
 // currentPower implements the api.Meter interface
 func (wb *ABLeMH) currentPower() (float64, error) {
 	l1, l2, l3, err := wb.currents()
-	return 230 * (l1 + l2 + l3), err
+	return 220 * (l1 + l2 + l3), err
 }
 
 // Currents implements the api.PhaseCurrents interface
@@ -260,6 +260,7 @@ func (wb *ABLeMH) Diagnose() {
 	}
 }
 
+/*
 var _ api.Resurrector = (*ABLeMH)(nil)
 
 // WakeUp implements the api.Resurrector interface
@@ -274,3 +275,4 @@ func (wb *ABLeMH) WakeUp() error {
 
 	return err
 }
+*/
